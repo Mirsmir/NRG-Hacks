@@ -3,6 +3,8 @@ import cv2 as cv
 import mediapipe as mp
 import argparse
 from collections import deque
+from model import KeyPointClassifier
+from model import PointHistoryClassifier
 
 
 
@@ -34,8 +36,10 @@ def initiModules():
         #KEYPOINT (BASED ON A STATIC POSITION OF THE HAND)
         #POINT HISTORY (BASED ON THE MOVEMENT OF THE HAND, MEANING THAT THE GESTURE IS AN ACTION RATHER THAN STATIC IMAGE)
 
-   # keypoint_classifier = KeyPointClassifier() #MLM that takes hand landmarks and maps it to keypoint classiiers
-    #point_history_classifier = PointHistoryClassifier() #MLM for point history classfifiers
+    global keypoint_classifier;
+    keypoint_classifier= KeyPointClassifier() #MLM that takes hand landmarks and maps it to keypoint classiiers
+    global point_history_classifier 
+    point_history_classifier = PointHistoryClassifier() #MLM for point history classfifiers
     
     with open('model/keypoint_classifier/keypoint_classifier_label.csv', #change the points (xyz) into actual classfifiers, it just maps it
               encoding='utf-8-sig') as f:
@@ -106,11 +110,15 @@ def videoCapture():
                 # Landmark calculation
                 landmark_list = calc_landmark_list(frame, hand_landmarks)
 
-                # Conversion to relative coordinates / normalized coordinates
+                # Conversion to relative coordinates / normalized coordinates 
+                #UNORMALIZED IS WHEN THEYRE RELATIVE TO THE WRIST, WHILST NORMALIZED IS RELATIVE TO TOP LEFT CORNER OF THE SCREEN
+                
                 pre_processed_landmark_list = pre_process_landmark(landmark_list)
                 pre_processed_point_history_list = pre_process_point_history(frame, pointHistory)
-                # Write to the dataset file
-                logging_csv(number, mode, pre_processed_landmark_list, pre_processed_point_history_list)
+                
+                
+                
+                logging_csv(pre_processed_landmark_list, pre_processed_point_history_list)
                 
                 # Hand sign classification
                 hand_sign_id = keypoint_classifier(pre_processed_landmark_list)
