@@ -136,7 +136,7 @@ def main():
                     if prev_wrists != None:
                         speed = (wrist[0] - prev_wrists[0], wrist[1] - prev_wrists[1])
                         sensetivity = 1.5
-                        Mouse.move()
+                        Mouse.move(speed[0], speed[1])
                     prev_wrists = wrist
 
                 # Finger gesture classification
