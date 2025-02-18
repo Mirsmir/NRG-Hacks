@@ -133,10 +133,11 @@ def main():
                 ##MINEENEENENEWIRNEIRNT
                 if handedness.classification[0].label == "Right":
                     wrist = landmark_list[0]
-                    if prev_wrists != None:
+                    print(hand_sign_id)
+                    if (prev_wrists != None) and (hand_sign_id == 1):
                         speed = (wrist[0] - prev_wrists[0], wrist[1] - prev_wrists[1])
-                        sensetivity = 1.5
-                        Mouse.move(speed[0], speed[1])
+                        sensetivity = 3
+                        Mouse.move(int(speed[0]*sensetivity), int(speed[1]*sensetivity))
                     prev_wrists = wrist
 
                 # Finger gesture classification
