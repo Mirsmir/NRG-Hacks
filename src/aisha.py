@@ -10,6 +10,7 @@ import mediapipe as mp
 import numpy as np
 
 from model import KeyPointClassifier, PointHistoryClassifier
+from KeyboardController import Mouse, Keyboard
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -88,6 +89,7 @@ def main():
 
     mode = 0
 
+    prev_wrists = None
     while True:
         key = cv.waitKey(10)
         if key == 27:  # ESC
@@ -127,6 +129,15 @@ def main():
                     point_history.append(landmark_list[8])
                 else:
                     point_history.append([0, 0])
+                
+                ##MINEENEENENEWIRNEIRNT
+                if handedness.classification[0].label == "Right":
+                    wrist = landmark_list[0]
+                    if prev_wrists != None:
+                        speed = (wrist[0] - prev_wrists[0], wrist[1] - prev_wrists[1])
+                        sensetivity = 1.5
+                        Mouse.move()
+                    prev_wrists = wrist
 
                 # Finger gesture classification
                 finger_gesture_id = 0
@@ -139,7 +150,7 @@ def main():
                 finger_gesture_history.append(finger_gesture_id)
                 most_common_fg_id = Counter(
                     finger_gesture_history).most_common()
-
+                
                 # Drawing part
                 debug_image = draw_bounding_rect(use_brect, debug_image, brect)
                 debug_image = draw_landmarks(debug_image, landmark_list)
@@ -150,9 +161,6 @@ def main():
                     keypoint_classifier_labels[hand_sign_id],
                     point_history_classifier_labels[most_common_fg_id[0][0]],
                 )
-
-                if handedness["label"] == "Right":
-                    pass
                     
                 # if key == 97:
                 #     for landmarks, handedness in zip(results.multi_hand_landmarks, results.multi_handedness):
