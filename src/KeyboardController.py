@@ -31,49 +31,58 @@ class Key:
         x = 0x58
         y = 0x59
         z = 0x5A
+        SPACE = 0x20
 
 class Keyboard:
         def __init__(self):
-                Keys = Key()
-        def press(key):
+                self.Key = Key()
+        def press(self, key):
                 """Presses key"""
                 user32.keybd_event(key, 0, 0, 0)
                 sleep(delay)
                 user32.keybd_event(key, 0, 2, 0)
                 sleep(delay)
-        def hold(key):
+        def hold(self, key):
                 """Holds a key"""
                 user32.keybd_event(key, 0, 0, 0)
                 sleep(delay)
 
-        def release(key):
+        def release(self, key):
                 """Releases a key"""
                 user32.keybd_event(key, 0, 2, 0)
                 sleep(delay)
 
+class Point(Structure):
+    _fields_ = [("x", c_long), ("y", c_long)]
+
 class Mouse:
         def __init__(self):
-                left = [0x0002, 0x0004]
-                right = [0x0008, 0x00010]
-                middle = [0x00020, 0x00040]
+                self.left = [0x0002, 0x0004]
+                self.right = [0x0008, 0x00010]
+                self.middle = [0x00020, 0x00040]
 
-        def move(x, y):
+        def move(self, x, y):
                 """Moves the cursor"""
+                pt = Point()
+                user32.GetCursorPos(byref(pt))
+                user32.SetCursorPos(x+pt.x, y+pt.y)
+        
+        def set(self, x, y):
                 user32.SetCursorPos(x, y)
 
-        def click(button):
+        def click(self, button):
                 """Clicks button"""
                 user32.mouse_event(button[0], 0, 0, 0, 0)
                 sleep(delay)
                 user32.mouse_event(button[1], 0, 0, 0, 0)
                 sleep(delay)
 
-        def holdclick(button):
+        def holdclick(self, button):
                 """Start pressing button"""
                 user32.mouse_event(button[0], 0, 0, 0, 0)
                 sleep(delay)
 
-        def releaseclick(button):
+        def releaseclick(self, button):
                 """Release button"""
                 user32.mouse_event(button[1])
                 sleep(delay)
